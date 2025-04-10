@@ -1,0 +1,101 @@
+/* Chatbot.css */
+
+.chatbot-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Ensure the messages fill up the available space */
+    align-items: center;
+    height: 100vh; /* Full screen height */
+    background-color: #f7fafc;
+    padding: 24px;
+  }
+  
+  .chatbot-header {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .chatbot-header h1 {
+    font-size: 2rem;
+    color: #4c51bf; /* Indigo */
+    font-weight: 600;
+  }
+  
+  .chatbot-messages {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 24px;
+    overflow-y: auto;
+    flex-grow: 1; /* Allow the chat messages to take up available space */
+    max-height: 70vh; /* Allow scrolling if messages exceed the screen height */
+  }
+  
+  .chatbot-message {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    font-size: 1rem;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  .bot-message {
+    background-color: #4c51bf; /* Indigo */
+    color: white;
+    align-self: flex-start; /* Align bot messages to the left */
+  }
+  
+  .user-message {
+    background-color: #e2e8f0; /* Light grey */
+    color: black;
+    align-self: flex-end; /* Align user messages to the right */
+  }
+  
+  .chatbot-input-container {
+    position: fixed;
+    bottom: 24px;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+  
+  .chatbot-input {
+    width: calc(100% - 48px); /* Space for the send button */
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+  
+  .chatbot-send-btn {
+    width: 48px;
+    height: 48px;
+    background-color: #4c51bf;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .chatbot-send-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  

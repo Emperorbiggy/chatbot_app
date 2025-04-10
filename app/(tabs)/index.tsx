@@ -1,74 +1,93 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import './Chatbot.css'; // Import custom CSS file
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const ChatbotPage: React.FC = () => {
+  const [messages, setMessages] = useState<{ text: string; fromBot: boolean }[]>([
+    { text: 'Hello! How can I help you today?', fromBot: true },
+  ]);
+  const [input, setInput] = useState<string>('');
+  const [awaitingBotReply, setAwaitingBotReply] = useState<boolean>(false);
 
-export default function HomeScreen() {
+  const handleSend = async () => {
+    if (!input.trim()) return;
+  
+    const userMessage = input.trim();
+    setMessages((prev) => [...prev, { text: userMessage, fromBot: false }]);
+    setInput('');
+    
+    // Set the bot to be typing before sending the request
+    setMessages((prev) => [...prev, { text: "Typing...", fromBot: true }]);
+    setAwaitingBotReply(true);
+  
+    try {
+      // Send the message to the backend chatbot
+      const response = await fetch("https://chatbotbackend-1wds.onrender.com/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      });
+  
+      const responseData = await response.json();
+      console.log("Response from bot:", responseData);
+  
+      // Replace the "Typing..." message with the bot's response
+      setMessages((prev) => [
+        ...prev.slice(0, -1), // Remove the "Typing..." message
+        { text: responseData.response, fromBot: true }, // Add the bot's response
+      ]);
+    } catch (err) {
+      console.error("Error fetching response:", err);
+      
+      // Replace the "Typing..." message with an error message
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        { text: "Error fetching response. Please try again.", fromBot: true },
+      ]);
+    } finally {
+      setAwaitingBotReply(false); // Stop waiting for the bot response
+    }
+  };
+  
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+    <div className="chatbot-container">
+      {/* Chatbot Header */}
+      <div className="chatbot-header">
+        <h1>Support Bot</h1>
+      </div>
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+      {/* Chatbot Messages */}
+      <div className="chatbot-messages">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`chatbot-message ${msg.fromBot ? 'bot-message' : 'user-message'}`}
+          >
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+      {/* Chatbot Input */}
+      <div className="chatbot-input-container">
+        <input
+          className="chatbot-input"
+          placeholder="Type a message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          disabled={awaitingBotReply}
+        />
+        <button
+          className="chatbot-send-btn"
+          onClick={handleSend}
+          disabled={awaitingBotReply}
+        >
+          ➤
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ChatbotPage;
