@@ -1,24 +1,24 @@
-# Use Node.js image
+# Use Node.js base image
 FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the project
+# Copy rest of the files
 COPY . .
 
-# Build the web version of the Expo app
-RUN npm run web-build
+# Build the web version of the app
+RUN npx expo export --platform web
 
-# Install a simple static server
+# Install static file server
 RUN npm install -g serve
 
-# Expose the port the app will run on
+# Expose port Render will use
 EXPOSE 3000
 
-# Serve the built static files
-CMD ["serve", "-s", "web-build", "-l", "3000"]
+# Serve the web build
+CMD ["serve", "-s", "dist", "-l", "3000"]
